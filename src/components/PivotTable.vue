@@ -17,8 +17,8 @@
           class="mainTable__row"
         >
           <li>{{ tableRow.GROUP }}</li>
-          <li>{{ tableRow.DATE_UPDATE }}</li>
-          <li>{{ tableRow.BEGINNING_DATE }}</li>
+          <li>{{ changeDateFormat(tableRow.DATE_UPDATE) }}</li>
+          <li>{{ changeDateFormat(tableRow.BEGINNING_DATE) }}</li>
           <li>{{ tableRow.DAYS_OF_CLASSES_STRING }}</li>
           <li>{{ tableRow.LESSONS_TIME }}</li>
         </ul>
@@ -37,6 +37,10 @@ export default {
     }
   },
   methods: {
+    changeDateFormat(str) {
+      const date = str.split('-');
+      return `${date[2]}.${date[1]}.${date[0]}`;
+    },
     getDepartmentsNamesList() {
       const namesList = Object.keys(this.departments);
       for (let i = namesList.length - 1; i >= 0; i--) {
