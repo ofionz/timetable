@@ -123,6 +123,15 @@ export default {
   },
   data: function() {
     return {
+      daysOfWeek: [
+        'Понедельник',
+        'Вторник',
+        'Среда',
+        'Четверг',
+        'Пятница',
+        'Суббота',
+        'Воскресенье'
+      ],
       notValidForms: {},
       ru: ru,
       maskTokens: {
@@ -142,8 +151,14 @@ export default {
   methods: {
     saveTable() {
       if (this.isTableValid()) {
+        this.currentDepartmentInfo.table.forEach(row =>
+          row.DAYS_OF_CLASSES.sort(this.daysOfWeekSorter)
+        );
         this.$emit('save-table', this.currentDepartmentInfo);
       }
+    },
+    daysOfWeekSorter(x, y) {
+      return this.daysOfWeek.indexOf(x) - this.daysOfWeek.indexOf(y);
     },
     addNewTableRow() {
       this.currentDepartmentInfo.table.push({
