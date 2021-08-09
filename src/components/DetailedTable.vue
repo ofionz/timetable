@@ -28,6 +28,7 @@
         <datepicker
           :input-class="'vdp-datepicker__field'"
           :wrapper-class="'cellBorder'"
+          :calendar-class="'vdp-datepicker__calendar'"
           :language="ru"
           :format="'dd.MM.yyyy'"
           v-model="tableRow.BEGINNING_DATE"
@@ -256,6 +257,15 @@ input:disabled {
 }
 .vdp-datepicker__field:focus {
   outline: none;
+}
+.vdp-datepicker__calendar {
+  position: absolute;
+  z-index: 100;
+  background: #fff;
+  width: 300px;
+  border: 1px solid #ccc;
+  right: -150%;
+  top: -350%;
 }
 .table li,
 .table__header {

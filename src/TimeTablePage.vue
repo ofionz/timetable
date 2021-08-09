@@ -1,12 +1,22 @@
 <template>
   <div id="time-table">
+    <CitySelector
+      v-if="!currentCityId"
+      :cities="cities"
+      @change-city="fetchData"
+    />
+
     <DepartmentSelector
+      v-else
       :departments="data.departments"
       @change-department="changeTable"
     />
     <ModalWindow :modal="modalWindowState" />
     <Loading v-if="isPreloaderActive" />
-    <PivotTable v-if="isPivot" :departments="data.departments" />
+    <PivotTable
+      v-if="isPivot && currentCityId"
+      :departments="data.departments"
+    />
     <DetailedTable
       ref="DetailedTable"
       v-if="!isPivot"
@@ -22,9 +32,11 @@ import Loading from './components/Loading.vue';
 import PivotTable from './components/PivotTable.vue';
 import DetailedTable from './components/DetailedTable';
 import DepartmentSelector from './components/DepartmentSelector';
+import CitySelector from './components/CitySelector';
 import factoryHttp from './utils/factoryHttp';
 import {
   GET_DEPARTMENTS_ENDPOINT,
+  GET_CITIES_ENDPOINT,
   SAVE_DEPARTMENT_ENDPOINT
 } from './constants/constants';
 
@@ -35,11 +47,14 @@ export default {
     ModalWindow,
     Loading,
     PivotTable,
-    DepartmentSelector
+    DepartmentSelector,
+    CitySelector
   },
   data: function() {
     return {
       data: { departments: {} },
+      currentCityId: '',
+      cities: [{ name: '123', id: '' }],
       currentDepartmentName: '',
       isPreloaderActive: true,
       isPivot: true,
@@ -52,7 +67,7 @@ export default {
     };
   },
   created: function() {
-    this.fetchData();
+    this.fetchCities();
   },
 
   methods: {
@@ -60,9 +75,21 @@ export default {
       this.isPivot = false;
       this.currentDepartmentName = currentDepartmentName;
     },
-    async fetchData() {
+    async fetchCities() {
       const http = factoryHttp();
-      const data = await http.get(GET_DEPARTMENTS_ENDPOINT);
+      const data = await http.get(GET_CITIES_ENDPOINT);
+      this.isPreloaderActive = false;
+      if (!data || data.departments === null || data.properties === null) {
+        this.setModalWindow('Error', 'Ошибка получения данных от сервера');
+        console.log(data);
+        return;
+      }
+      this.cities = data;
+    },
+    async fetchData(cityId) {
+      this.currentCityId = cityId;
+      const http = factoryHttp();
+      const data = await http.get(GET_DEPARTMENTS_ENDPOINT, { cityID: cityId });
       this.isPreloaderActive = false;
       if (!data || data.departments === null || data.properties === null) {
         this.setModalWindow('Error', 'Ошибка получения данных от сервера');
